@@ -387,6 +387,88 @@ def withdraw_vpls (self, reactor, service, line):
 	return True
 
 
+@Text('announce ls_unicast')
+def announce_ls_unicast (self, reactor, service, line):
+	def callback ():
+		try:
+			descriptions,command = self.parser.extract_neighbors(line)
+			peers = reactor.match_neighbors(descriptions)
+			if not peers:
+				self.log_failure('no neighbor matching the command : %s' % command,'warning')
+				reactor.answer(service,'error')
+				yield True
+				return
+			changes = self.parser.api_ls_unicast(command)
+			if not changes:
+				self.log_failure('command could not parse ls_unicast in : %s' % command,'warning')
+				reactor.answer(service,'error')
+				yield True
+				return
+			for change in changes:
+				change.nlri.action = OUT.ANNOUNCE
+				reactor.configuration.inject_change(peers,change)
+				self.log_message('ls_unicast added to %s : %s' % (', '.join(peers) if peers else 'all peers',change.extensive()))
+				yield False
+			reactor.route_update = True
+			reactor.answer(service,'done')
+		except ValueError:
+			self.log_failure('issue parsing the ls_unicast')
+			reactor.answer(service,'error')
+			yield True
+		except IndexError:
+			self.log_failure('issue parsing the ls_unicast')
+			reactor.answer(service,'error')
+			yield True
+
+	reactor.plan(callback(),'announce_ls_unicast')
+	return True
+
+
+@Text('withdraw ls_unicast')
+def withdraw_ls_unicast (self, reactor, service, line):
+	def callback ():
+		try:
+			descriptions,command = self.parser.extract_neighbors(line)
+			peers = reactor.match_neighbors(descriptions)
+			if not peers:
+				self.log_failure('no neighbor matching the command : %s' % command,'warning')
+				reactor.answer(service,'error')
+				yield True
+				return
+
+			changes = self.parser.api_ls_unicast(command)
+
+			if not changes:
+				self.log_failure('command could not parse ls_unicast in : %s' % command,'warning')
+				reactor.answer(service,'error')
+				yield True
+				return
+
+			for change in changes:
+				change.nlri.action = OUT.WITHDRAW
+				if reactor.configuration.inject_change(peers,change):
+					self.log_message('ls_unicast removed from %s : %s' % (', '.join(peers) if peers else 'all peers',change.extensive()))
+					yield False
+				else:
+					self.log_failure('ls_unicast not found on %s : %s' % (', '.join(peers) if peers else 'all peers',change.extensive()))
+					yield False
+
+			reactor.route_update = True
+			reactor.answer(service,'done')
+		except ValueError:
+			self.log_failure('issue parsing the ls_unicast')
+			reactor.answer(service,'error')
+			yield True
+		except IndexError:
+			self.log_failure('issue parsing the ls_unicast')
+			reactor.answer(service,'error')
+			yield True
+
+	reactor.plan(callback(),'withdraw_ls_unicast')
+	return True
+
+
+
 @Text('announce attributes')
 def announce_attributes (self, reactor, service, line):
 	def callback ():

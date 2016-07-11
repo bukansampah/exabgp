@@ -108,6 +108,16 @@ class Text (object):
 		changes = self.configuration.scope.pop('routes',[])
 		return changes
 
+	def api_ls_unicast (self, command):
+		action, line = command.split(' ',1)
+
+		self.configuration.ls_unicast.clear()
+		if not self.configuration.partial('traffic_engineering',line):
+			return []
+
+		changes = self.configuration.scope.pop('routes',[])
+		return changes
+
 	def api_attributes (self, command, peers):
 		action, line = command.split(' ',1)
 

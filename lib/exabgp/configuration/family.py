@@ -29,6 +29,7 @@ class ParseFamily (Section):
 		'   ipv6 flow-vpn;\n' \
 		'   l2vpn vpls;\n' \
 		'   l2vpn evpn;\n' \
+		'   traffic_engineering ls_unicast;\n' \
 		'}'
 
 	convert = {
@@ -50,6 +51,9 @@ class ParseFamily (Section):
 		'l2vpn': {
 			'vpls':      (AFI(AFI.l2vpn),SAFI(SAFI.vpls)),
 			'evpn':      (AFI(AFI.l2vpn),SAFI(SAFI.evpn)),
+		},
+		'traffic_engineering': {
+			'ls_unicast':   (AFI(AFI.traffic_engineering),SAFI(SAFI.ls_unicast)),
 		}
 	}
 
@@ -57,6 +61,7 @@ class ParseFamily (Section):
 		'ipv4':  'append-command',
 		'ipv6':  'append-command',
 		'l2vpn': 'append-command',
+		'traffic_engineering': 'append-command',
 	}
 
 	name = 'family'
@@ -67,6 +72,7 @@ class ParseFamily (Section):
 			'ipv4':  self.ipv4,
 			'ipv6':  self.ipv6,
 			'l2vpn': self.l2vpn,
+			'traffic_engineering': self.traffic_engineering,
 		}
 		self._all = ''
 		self._seen = []
@@ -105,6 +111,9 @@ class ParseFamily (Section):
 
 	def l2vpn (self, tokeniser):
 		return self._family(tokeniser, 'l2vpn')
+
+	def traffic_engineering (self, tokeniser):
+		return self._family(tokeniser, 'traffic_engineering')
 
 	def minimal (self, tokeniser):
 		raise ValueError('family minimal is deprecated')

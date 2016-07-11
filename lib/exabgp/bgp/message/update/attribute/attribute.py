@@ -74,6 +74,7 @@ class Attribute (object):
 		# RFC5512
 		TUNNEL_ENCAP       = 0x17  # 23
 		AIGP               = 0x1A  # 26
+		LINK_STATE         = 0x1D  # 29
 
 		INTERNAL_NAME      = 0xFFFC
 		INTERNAL_WITHDRAW  = 0xFFFD
@@ -99,6 +100,7 @@ class Attribute (object):
 			PMSI_TUNNEL:        'pmsi-tunnel',
 			TUNNEL_ENCAP:       'tunnel-encaps',
 			AIGP:               'aigp',
+			LINK_STATE:         'link-state',
 			0xfffc:             'internal-name',
 			0xfffd:             'internal-withdraw',
 			0xfffe:             'internal-watchdog',

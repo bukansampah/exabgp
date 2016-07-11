@@ -16,6 +16,7 @@ from exabgp.bgp.message.update.attribute.generic import GenericAttribute
 from exabgp.bgp.message.update.attribute.origin import Origin
 from exabgp.bgp.message.update.attribute.aspath import ASPath
 from exabgp.bgp.message.update.attribute.localpref import LocalPreference
+from exabgp.bgp.message.update.attribute.linkstate import LinkState
 from exabgp.bgp.message.update.attribute.community.communities import Communities
 from exabgp.bgp.message.update.attribute.community.extended import ExtendedCommunities
 
@@ -78,6 +79,7 @@ class Attributes (dict):
 		Attribute.CODE.EXTENDED_COMMUNITY: ('list',    '', 'extended-community', '%s',     '%s'),
 		Attribute.CODE.PMSI_TUNNEL:        ('string',  '', 'pmsi',               '%s',     '%s'),
 		Attribute.CODE.AIGP:               ('integer', '', 'aigp',               '%s',     '%s'),
+		Attribute.CODE.LINK_STATE:         ('integer', '', 'link-state',         '%s',     '%s'),
 		Attribute.CODE.INTERNAL_NAME:      ('string',  '', 'name',               '%s',     '%s'),
 	}
 

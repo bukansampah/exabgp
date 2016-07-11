@@ -15,6 +15,7 @@ from exabgp.bgp.message.update.nlri.inet import INET
 from exabgp.bgp.message.update.nlri.labelled import Labelled
 from exabgp.bgp.message.update.nlri.ipvpn import IPVPN
 from exabgp.bgp.message.update.nlri.vpls import VPLS
+from exabgp.bgp.message.update.nlri.ls_unicast import LS_UNICAST
 from exabgp.bgp.message.update.nlri.flow import Flow
 from exabgp.bgp.message.update.nlri.evpn import EVPN
 from exabgp.bgp.message.update.nlri.rtc import RTC

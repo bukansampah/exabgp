@@ -1,0 +1,34 @@
+#!/usr/bin/env python
+
+import sys
+import time
+
+messages = [
+	'neighbor 192.168.10.101 announce ls_unicast local_node 192.168.0.1 remote_node 192.168.0.2 link_local_identifier 10 link_remote_identifier 11 ipv4_interface_address 10.0.0.1 ipv4_neighbor_address 10.0.0.2 next-hop 192.168.201.1 origin igp as-path [ ] local-preference 100 link-state [ mlb:10000000000 mrlb:9000000000 ub:9000000000:9000000000:9000000000:9000000000:9000000000:9000000000:9000000000:9000000000 tem:4000 im:4000 ]',
+	'neighbor 192.168.10.101 announce ls_unicast local_node 192.168.0.1 remote_node 192.168.0.3 link_local_identifier 11 link_remote_identifier 1 ipv4_interface_address 10.0.0.5 ipv4_neighbor_address 10.0.0.6 next-hop 192.168.201.1 origin igp as-path [ ] local-preference 100 link-state [ mlb:10000000 mrlb:9000000 ub:9000000:9000000:9000000:9000000:9000000:9000000:9000000:9000000 tem:6000 im:4000 ]',
+	'neighbor 192.168.10.101 announce ls_unicast local_node 192.168.0.1 next-hop 192.168.201.1 origin igp as-path [ ] local-preference 100 link-state [ nn:PE1 iai:470001 lridv4:11.0.0.101 ]',
+	'neighbor 192.168.10.101 announce ls_unicast local_node 192.168.0.2 next-hop 192.168.201.1 origin igp as-path [ ] local-preference 100 link-state [ nn:PE2 iai:470001 lridv4:11.0.0.102 ]',
+	'neighbor 192.168.10.101 announce ls_unicast local_node 192.168.0.3 next-hop 192.168.201.1 origin igp as-path [ ] local-preference 100 link-state [ nn:PE3 iai:470001 lridv4:11.0.0.103 ]',
+]
+
+while messages:
+	time.sleep(1)
+	message = messages.pop(0)
+	sys.stdout.write(message + '\n')
+	sys.stdout.flush()
+
+counter = 0
+while True:
+	try:
+		while True:
+			line = sys.stdin.readline().strip()
+			if line:
+				break
+			counter += 1
+			if counter > 100:
+				sys.exit(1)
+		counter = 0
+		time.sleep(0.5)
+	except IOError:
+		# most likely a signal during readline
+		pass

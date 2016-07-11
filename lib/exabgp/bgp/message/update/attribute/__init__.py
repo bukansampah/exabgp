@@ -33,3 +33,4 @@ from exabgp.bgp.message.update.attribute.mpurnlri import MPURNLRI
 from exabgp.bgp.message.update.attribute.mpurnlri import EMPTY_MPURNLRI
 from exabgp.bgp.message.update.attribute.pmsi import PMSI
 from exabgp.bgp.message.update.attribute.aigp import AIGP
+from exabgp.bgp.message.update.attribute.linkstate import LinkState

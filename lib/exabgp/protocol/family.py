@@ -20,6 +20,7 @@ class AFI (Resource):
 	ipv4      = 0x01
 	ipv6      = 0x02
 	l2vpn     = 0x19
+	traffic_engineering = 0x4004
 
 	# Family = {
 	# 	ipv4:  0x02,  # socket.AF_INET,
@@ -31,6 +32,7 @@ class AFI (Resource):
 		'ipv4':  ipv4,
 		'ipv6':  ipv6,
 		'l2vpn': l2vpn,
+		'traffic_engineering': traffic_engineering,
 	}.items())
 
 	names = dict([(r,l) for (l,r) in codes.items()])
@@ -72,6 +74,8 @@ class AFI (Resource):
 			return ['unicast','mpls-vpn','flow','flow-vpn']
 		if afi == 'l2vpn':
 			return ['vpls','evpn']
+		if afi == 'traffic_engineering':
+			return ['ls_unicast']
 		return []
 
 	@classmethod
@@ -100,6 +104,7 @@ class SAFI (Resource):
 	# vpn_adi = 69              # [RFC-ietf-l1vpn-bgp-auto-discovery-05.txt]
 
 	evpn = 70                   # [draft-ietf-l2vpn-evpn]
+	ls_unicast = 71             # [RFC7752]
 	mpls_vpn = 128              # [RFC4364]
 	# mcast_bgp_mpls_vpn = 129  # [RFC2547]
 	# rt = 132                  # [RFC4684]
@@ -123,6 +128,7 @@ class SAFI (Resource):
 		'rtc':       rtc,
 		'flow':      flow_ip,
 		'flow-vpn':  flow_vpn,
+		'ls_unicast':ls_unicast,
 	}
 
 	names = dict([(r,l) for (l,r) in codes.items()])

@@ -35,6 +35,7 @@ from exabgp.bgp.message.update.attribute import OriginatorID
 from exabgp.bgp.message.update.attribute import ClusterID
 from exabgp.bgp.message.update.attribute import ClusterList
 from exabgp.bgp.message.update.attribute import AIGP
+from exabgp.bgp.message.update.attribute import LinkState
 from exabgp.bgp.message.update.attribute import GenericAttribute
 
 from exabgp.bgp.message.update.attribute.community.community import Community
@@ -238,6 +239,21 @@ def local_preference (tokeniser):
 	if not value.isdigit():
 		raise ValueError('invalid local preference %s' % value)
 	return LocalPreference(int(value))
+
+def link_state (tokeniser):
+	values = []
+
+	value = tokeniser()
+	if value == '[':
+		while True:
+			value = tokeniser()
+			if value == ']':
+				break
+			values.append(value)
+	else:
+		values.append(value)
+
+	return LinkState(values)
 
 
 def atomic_aggregate (tokeniser):

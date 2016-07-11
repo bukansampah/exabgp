@@ -31,6 +31,8 @@ from exabgp.configuration.flow import ParseFlowThen
 from exabgp.configuration.flow import ParseFlowMatch
 from exabgp.configuration.l2vpn import ParseL2VPN
 from exabgp.configuration.l2vpn import ParseVPLS
+from exabgp.configuration.traffic_engineering import ParseTrafficEngineering
+from exabgp.configuration.traffic_engineering import ParseLSUNICAST
 from exabgp.configuration.operational import ParseOperational
 
 from exabgp.configuration.environment import environment
@@ -116,6 +118,8 @@ class Configuration (_Configuration):
 		self.flow_then    = ParseFlowThen    (self.tokeniser,self.scope,self.error,self.logger)
 		self.l2vpn        = ParseL2VPN       (self.tokeniser,self.scope,self.error,self.logger)
 		self.vpls         = ParseVPLS        (self.tokeniser,self.scope,self.error,self.logger)
+		self.traffic_engineering = ParseTrafficEngineering(self.tokeniser,self.scope,self.error,self.logger)
+		self.ls_unicast   = ParseLSUNICAST   (self.tokeniser,self.scope,self.error,self.logger)
 		self.operational  = ParseOperational (self.tokeniser,self.scope,self.error,self.logger)
 
 		# We should check if name are unique when running Section.__init__
@@ -145,6 +149,7 @@ class Configuration (_Configuration):
 					'static':      self.static.name,
 					'flow':        self.flow.name,
 					'l2vpn':       self.l2vpn.name,
+					'traffic_engineering': self.traffic_engineering.name,
 					'operational': self.operational.name,
 				},
 			},
@@ -158,6 +163,7 @@ class Configuration (_Configuration):
 					'static':      self.static.name,
 					'flow':        self.flow.name,
 					'l2vpn':       self.l2vpn.name,
+					'traffic_engineering': self.traffic_engineering.name,
 					'operational': self.operational.name,
 				},
 			},
@@ -246,6 +252,19 @@ class Configuration (_Configuration):
 				'sections': {
 				},
 			},
+			self.traffic_engineering.name: {
+				'class':    self.traffic_engineering,
+				'commands': self.traffic_engineering.known.keys(),
+				'sections': {
+					'ls_unicast': self.ls_unicast.name,
+				},
+			},
+			self.ls_unicast.name: {
+				'class':    self.ls_unicast,
+				'commands': self.traffic_engineering.known.keys(),
+				'sections': {
+				},
+			},
 			self.operational.name: {
 				'class':    self.operational,
 				'commands': self.operational.known.keys(),
@@ -285,6 +304,8 @@ class Configuration (_Configuration):
 		self.flow_then.clear()
 		self.l2vpn.clear()
 		self.vpls.clear()
+		self.traffic_engineering.clear()
+		self.ls_unicast.clear()
 		self.operational.clear()
 
 	def _rollback_reload (self):
