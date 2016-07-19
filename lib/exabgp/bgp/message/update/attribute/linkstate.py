@@ -30,7 +30,8 @@ class LinkState (Attribute):
 		[1090, 'mrlb'],
 		[1091, 'ub'],
 		[1092, 'tem'],
-		[1095, 'im']]
+		[1095, 'im'],
+		[1096, 'srlg']]
 
 	def __init__ (self, tlvs, packed=None):
 		self.tlvs = {}
@@ -85,6 +86,12 @@ class LinkState (Attribute):
 						'\x04\x47', # 1095
 						'\x00\x03', # length
 						pack('!I', int(val))[1:])
+				elif tlv_type=="srlg":  # SRLG
+					enc += "%s%s" % (
+						'\x04\x48', # 1096
+						pack('!H', 4*len(val.split(':')))) # length
+					for v in val.split(':'):
+						enc += "%s" % pack('!I', int(v,16))
 		self._packed = self._attribute(enc)
 
 	def __eq__ (self, other):
