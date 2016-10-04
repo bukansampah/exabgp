@@ -40,7 +40,7 @@ class ParseTrafficEngineering (ParseLSUNICAST):
 @ParseTrafficEngineering.register('ls_unicast','append-name')
 def ls_unicast (tokeniser):
 	change = Change(
-		LS_UNICAST(None,None,None,None,None,None),
+		LS_UNICAST(None,None,None,None,None,None,None),
 		Attributes()
 	)
 

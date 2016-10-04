@@ -30,15 +30,16 @@ unique = _unique()
 @NLRI.register(AFI.traffic_engineering,SAFI.ls_unicast)
 class LS_UNICAST (NLRI):
 
-	__slots__ = ['action','nexthop','local_node','remote_node',
+	__slots__ = ['action','nexthop','local_node','protocol','remote_node',
 			'link_local_identifier','link_remote_identifier',
 			'ipv4_interface_address','ipv4_neighbor_address', 'unique']
 
-	def __init__ (self, local_node, remote_node, link_local_identifier, link_remote_identifier, ipv4_interface_address, ipv4_neighbor_address):
+	def __init__ (self, local_node, protocol, remote_node, link_local_identifier, link_remote_identifier, ipv4_interface_address, ipv4_neighbor_address):
 		NLRI.__init__(self,AFI.traffic_engineering,SAFI.ls_unicast)
 		self.action = OUT.ANNOUNCE
 		self.nexthop = None
 		self.local_node = local_node
+		self.protocol = protocol
 		self.remote_node = remote_node
 		self.link_local_identifier = link_local_identifier
 		self.link_remote_identifier = link_remote_identifier
@@ -58,26 +59,45 @@ class LS_UNICAST (NLRI):
 
 	def pack (self, negotiated=None):
 		if self.link_local_identifier==None: # Node NLRI
-			return '%s%s%s%s%s' % (
-				'\x00\x01',  # Node NLRI
-				'\x00\x25',  # FIXME: length:37
-				'\x03',	  # Protocol ID Unknown (0), ospf 3
-				'\x00\x00\x00\x00\x00\x00\x00\x00', # Identifier 0->L3, 1->Optical topo
-				pack(	# LOCAL NODE TLV
+			# FIXME YLT: This is horrible, needs to be addressed
+			msg = ''
+			if self.protocol==3: # OSPF
+				msg += pack(	# LOCAL NODE TLV
 					'!HHHHIHHIHHI',
 					256, # Type (Node)
 					24,  # Length,
 					512, # AS TLV
 					4,   # AS TLV Length
-					100,   # AS TLV ID
-					514, # AREA ID TLV
+					100, # AS TLV ID
+					514, # OSPF AREA ID TLV
 					4,   # AREA ID TLV Length
-					0x0,   # AREA ID TLV ID
+					0x0, # AREA ID TLV ID
 					515, # IGP ROUTER ID TLV
 					4,   # IGP ROUTER ID TLV Length
 					struct.unpack("!L", socket.inet_aton(self.local_node._string))[0],   # IGP ROUTER ID TLV ID
 				)
+				length = 37
+			else:
+				msg += pack(	# LOCAL NODE TLV
+					'!HHHHIHHI',
+					256, # Type (Node)
+					16,  # Length,
+					512, # AS TLV
+					4,   # AS TLV Length
+					100, # AS TLV ID
+					515, # IGP ROUTER ID TLV
+					4,   # IGP ROUTER ID TLV Length
+					struct.unpack("!L", socket.inet_aton(self.local_node._string))[0],   # IGP ROUTER ID TLV ID
+				)
+				length = 29
+			header = '%s%s%s%s' % (
+				'\x00\x01',  # Node NLRI
+				pack('!H', length), # FIXME: length:37 (29 in ISIS)
+				pack("!B", self.protocol), #'\x03',	  # Protocol ID Unknown (0), ospf 3
+				'\x00\x00\x00\x00\x00\x00\x00\x00' # Identifier 0->L3, 1->Optical topo
 			)
+			msg = header + msg
+			return msg
 		else:
 			return '%s%s%s%s%s%s%s' % (
 				'\x00\x02',  # Link NLRI
@@ -138,6 +158,7 @@ class LS_UNICAST (NLRI):
 	def json (self):
 		content = ', '.join([
 			'"local_node": %s' % self.local_node,
+			'"protocol": %s' % self.protocol,
 			'"remote_node": %s' % self.remote_node,
 			'"link_local_identifier": %s' % self.link_local_identifier,
 			'"link_remote_identifier": %s' % self.link_remote_identifier,
@@ -147,8 +168,9 @@ class LS_UNICAST (NLRI):
 		return '{ %s }' % (content)
 
 	def extensive (self):
-		return "ls_unicast local_node %s remote_node %s link_local_identifier %s link_remote_identifier %s ipv4_interface_address %s ipv4_neighbor_address %s %s" % (
+		return "ls_unicast local_node %s protocol %s remote_node %s link_local_identifier %s link_remote_identifier %s ipv4_interface_address %s ipv4_neighbor_address %s %s" % (
 			self.local_node,
+			self.protocol,
 			self.remote_node,
 			self.link_local_identifier,
 			self.link_remote_identifier,

@@ -17,7 +17,7 @@ from exabgp.rib.change import Change
 
 def ls_unicast (tokeniser):
 	return Change(
-		LS_UNICAST(None,None,None,None,None,None),
+		LS_UNICAST(None,None,None,None,None,None,None),
 		Attributes()
 	)
 
@@ -26,6 +26,9 @@ def ls_unicast_local_node (tokeniser):
 	value = tokeniser()
 	return IP.create(value)
 
+def ls_unicast_protocol (tokeniser):
+	value = tokeniser()
+	return int(value)
 
 def ls_unicast_remote_node (tokeniser):
 	value = tokeniser()

@@ -28,6 +28,7 @@ from exabgp.configuration.static.mpls import route_distinguisher
 
 from exabgp.configuration.traffic_engineering.parser import ls_unicast
 from exabgp.configuration.traffic_engineering.parser import ls_unicast_local_node
+from exabgp.configuration.traffic_engineering.parser import ls_unicast_protocol
 from exabgp.configuration.traffic_engineering.parser import ls_unicast_remote_node
 from exabgp.configuration.traffic_engineering.parser import ls_unicast_link_local_identifier
 from exabgp.configuration.traffic_engineering.parser import ls_unicast_link_remote_identifier
@@ -39,6 +40,7 @@ from exabgp.configuration.traffic_engineering.parser import next_hop
 class ParseLSUNICAST (Section):
 	definition = [
 		'local_node <local node ip; ipv4>',
+		'protocol <protocol id; integer>',
 		'remote_node <remote node ip; ipv4>',
 		'link_local_identifier <link local identifier; integer>',
 		'link_remote_identifier <link remote identifier; interger>',
@@ -88,6 +90,7 @@ class ParseLSUNICAST (Section):
 		'watchdog':           watchdog,
 		'withdraw':           withdraw,
 		'local_node':             ls_unicast_local_node,
+		'protocol':               ls_unicast_protocol,
 		'remote_node':            ls_unicast_remote_node,
 		'link_local_identifier':  ls_unicast_link_local_identifier,
 		'link_remote_identifier': ls_unicast_link_remote_identifier,
@@ -114,6 +117,7 @@ class ParseLSUNICAST (Section):
 		'withdraw':            'attribute-add',
 		'next-hop':               'nlri-set',
 		'local_node':             'nlri-set',
+		'protocol':               'nlri-set',
 		'remote_node':            'nlri-set',
 		'link_local_identifier':  'nlri-set',
 		'link_remote_identifier': 'nlri-set',
@@ -126,6 +130,7 @@ class ParseLSUNICAST (Section):
 		'rd':                  'rd',
 		'route-distinguisher': 'rd',
 		'local_node':             'local_node',
+		'protocol':               'protocol',
 		'remote_node':            'remote_node',
 		'link_local_identifier':  'link_local_identifier',
 		'link_remote_identifier': 'link_remote_identifier',
@@ -161,6 +166,8 @@ class ParseLSUNICAST (Section):
 			return self.error.set('ls_unicast next-hop missing')
 		if nlri.local_node is None:
 			return self.error.set('ls_unicast local_node missing')
+		if nlri.protocol is None:
+			nlri.protocol = 0
 		return True
 
 	def check (change):
